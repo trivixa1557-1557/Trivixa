@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRIVIXA AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080914;color:#f4f2ff;
+font-family:system-ui,sans-serif;display:flex;justify-content:center}
+main{width:100%;max-width:480px;padding:28px 20px;
+display:flex;flex-direction:column;align-items:center}
+.brand{font-size:27px;font-weight:800;letter-spacing:7px}
+.tag{color:#aaa3cb;font-size:12px;margin-top:5px}
+.orb{width:150px;height:150px;border-radius:50%;margin:48px 0 24px;
+background:radial-gradient(circle at 35% 30%,white,#b9a1ff 12%,
+#7145ef 38%,#2923a4 65%,#101026 78%);
+box-shadow:0 0 45px #7854ff77,0 0 95px #4532ff44;
+animation:breathe 4s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.06)}}
+#status{font-size:13px;color:#c5b8ff;text-align:center}
+#chat{width:100%;display:flex;flex-direction:column;gap:10px;margin:25px 0}
+.msg{background:#17182b;padding:13px 14px;border-radius:15px;
+font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+.user{background:#30235a;align-self:flex-end}
+form{width:100%;display:flex;gap:8px}
+input{width:0;flex:1;min-width:0;padding:13px;border-radius:13px;
+border:1px solid #34334f;background:#141526;color:white;font-size:14px}
+button{border:0;border-radius:13px;padding:12px 14px;
+background:#9272ff;color:#100d20;font-weight:700}
+.controls{display:flex;gap:9px;margin-top:12px;flex-wrap:wrap;justify-content:center}
+.secondary{background:#1b1b30;color:#e3ddff;border:1px solid #34334f}
+footer{text-align:center;color:#77758f;font-size:11px;margin-top:30px}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">TRIVIXA</div>
+  <div class="tag">INTELLIGENCE WITHOUT LIMITS</div>
+  <div class="orb"></div>
+  <div id="status">Ready to listen when you are.</div>
+
+  <div id="chat" aria-live="polite">
+    <div class="msg">I am Trivixa. My voice interface is ready.
+    Let's build my intelligence next.</div>
+  </div>
+
+  <form id="form">
+    <input id="question" placeholder="Type or use your voice..."
+    autocomplete="off">
+    <button type="submit">Send</button>
+  </form>
+
+  <div class="controls">
+    <button class="secondary" id="listen">🎙 Listen</button>
+    <button class="secondary" id="speak">🔊 Speak</button>
+    <button class="secondary" id="clear">Clear</button>
+  </div>
+
+  <footer>TRIVIXA · PROTOTYPE 002<br>
+  Voice input enabled · AI brain not connected yet</footer>
+</main>
+<script>
+const chat=document.getElementById("chat");
+const input=document.getElementById("question");
+const status=document.getElementById("status");
+let lastReply="Hello! I am Trivixa. Let's build something extraordinary.";
+let recognition=null;
+
+function addMessage(text,who=""){
+  const div=document.createElement("div");
+  div.className="msg "+who;
+  div.textContent=text;
+  chat.appendChild(div);
+  div.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+document.getElementById("form").addEventListener("submit",e=>{
+  e.preventDefault();
+  const text=input.value.trim();
+  if(!text)return;
+  addMessage(text,"user");
+  input.value="";
+  lastReply="I received your message: "+text+
+  ". My next upgrade is connecting a real AI brain.";
+  addMessage(lastReply);
+  status.textContent="Message received";
+});
+
+document.getElementById("listen").addEventListener("click",()=>{
+  const SpeechAPI=window.SpeechRecognition||
+                  window.webkitSpeechRecognition;
+  if(!SpeechAPI){
+    status.textContent="Voice input unavailable here. Try Chrome.";
+    return;
+  }
+  try{
+    recognition=new SpeechAPI();
+    recognition.lang="en-IN";
+    recognition.continuous=false;
+    recognition.interimResults=false;
+    recognition.onstart=()=>{
+      status.textContent="Listening... speak now";
+    };
+    recognition.onresult=e=>{
+      input.value=e.results[0][0].transcript;
+      status.textContent="Heard you. Tap Send to continue.";
+      input.focus();
+    };
+    recognition.onerror=e=>{
+      status.textContent="Voice error: "+e.error+
+      ". Check microphone permission and try again.";
+    };
+    recognition.onend=()=>{
+      if(status.textContent==="Listening... speak now")
+        status.textContent="Ready for another attempt.";
+    };
+    recognition.start();
+  }catch(e){
+    status.textContent="Could not start microphone. Try again.";
+  }
+});
+
+document.getElementById("speak").addEventListener("click",()=>{
+  if(!("speechSynthesis" in window)){
+    status.textContent="Speech output unavailable.";
+    return;
+  }
+  speechSynthesis.cancel();
+  const utterance=new SpeechSynthesisUtterance(lastReply);
+  utterance.lang="en-IN";
+  utterance.onstart=()=>status.textContent="Trivixa is speaking...";
+  utterance.onend=()=>status.textContent="Ready";
+  speechSynthesis.speak(utterance);
+});
+
+document.getElementById("clear").addEventListener("click",()=>{
+  chat.replaceChildren();
+  status.textContent="Fresh conversation";
+});
+
+</script>
+</body>
+</html>
