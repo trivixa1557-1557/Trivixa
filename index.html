@@ -1,280 +1,240 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#080711">
-<title>TRIVIXA — Your AI Companion</title>
+<meta name="theme-color" content="#090817">
+<title>TRIVIXA AI</title>
 <style>
-:root {
-  --bg:#080711; --panel:#121020; --line:#29233f;
-  --purple:#a78bfa; --cyan:#70e7f5; --text:#f7f3ff;
-  --muted:#9992b2;
-}
-* { box-sizing:border-box; }
-body {
-  margin:0; min-height:100vh; color:var(--text);
-  background:radial-gradient(ellipse at 50% 5%,#251344 0%,#100b20 35%,var(--bg) 75%);
-  font-family:system-ui,-apple-system,sans-serif;
-}
-button,input { font:inherit; }
-button { cursor:pointer; }
-.app { max-width:650px; min-height:100vh; margin:auto; padding:22px 18px 28px; }
-header { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-.brand { font-size:24px; font-weight:850; letter-spacing:5px;
-  background:linear-gradient(90deg,#fff,#b9a0ff,#73e9f5);
-  color:transparent; background-clip:text; }
-.tagline { font-size:10px; letter-spacing:2px; color:var(--muted); margin-top:4px; }
-.pill { font-size:11px; color:#a9f6d0; border:1px solid #285744;
-  background:#10241d; border-radius:30px; padding:7px 10px; white-space:nowrap; }
-.pill:before { content:""; display:inline-block; width:6px; height:6px;
-  border-radius:50%; background:#64e6a2; margin-right:6px; }
-.hero { display:flex; flex-direction:column; align-items:center; text-align:center;
-  padding:32px 0 22px; }
-.orb-wrap { width:200px; height:200px; position:relative; display:grid; place-items:center; }
-.ring { position:absolute; inset:10px; border:1px solid #9474ff65;
-  border-radius:50%; animation:spin 14s linear infinite; }
-.ring:after { content:""; position:absolute; top:18px; left:17px;
-  width:8px; height:8px; border-radius:50%; background:var(--cyan);
-  box-shadow:0 0 18px var(--cyan); }
-.ring.two { inset:0; border-color:#65dced32; transform:rotateX(65deg); animation-duration:9s; }
-.ring.two:after { background:#c1a1ff; }
-.orb { width:126px; height:126px; border-radius:50%;
-  background:radial-gradient(circle at 33% 25%,#fff 0%,#d5c8ff 5%,#a58aff 17%,#6544d8 38%,#29205f 64%,#100d26 79%);
-  box-shadow:inset -12px -15px 30px #070611,0 0 28px #946aff9c,0 0 75px #7545ff52;
-  animation:breathe 4s ease-in-out infinite; }
-@keyframes spin { to { transform:rotate(360deg); } }
-@keyframes breathe { 50% { transform:scale(1.07); filter:brightness(1.15); } }
-body.listening .orb { background:radial-gradient(circle at 35% 25%,white,#92fff1 12%,#39b8cf 35%,#2850ae 65%,#101026 80%); box-shadow:0 0 45px #42e8ed,0 0 100px #258aff77; }
-body.speaking .orb { filter:hue-rotate(35deg) brightness(1.2); }
-h1 { font-size:27px; margin:15px 0 5px; letter-spacing:.5px; }
-.subtitle { font-size:13px; color:var(--muted); line-height:1.6; }
-.status { margin-top:17px; padding:9px 14px; border:1px solid var(--line);
-  background:#ffffff06; border-radius:30px; font-size:12px; color:#d9caff; }
-.section-title { display:flex; align-items:center; justify-content:space-between;
-  margin:12px 0 13px; font-size:13px; color:#dcd3f5; }
-.section-title span { color:var(--muted); font-size:11px; }
-.chat { display:flex; flex-direction:column; gap:12px; min-height:90px; }
-.msg { max-width:88%; padding:12px 14px; border:1px solid var(--line);
-  border-radius:5px 17px 17px 17px; background:#151225;
-  font-size:13px; line-height:1.65; overflow-wrap:anywhere; white-space:pre-wrap; }
-.msg.user { align-self:flex-end; background:#30204f; border-color:#63479b;
-  border-radius:17px 5px 17px 17px; }
-.msg .who { display:block; color:#c0aaff; font-size:10px; letter-spacing:1px; margin-bottom:4px; }
-.composer { margin-top:15px; padding:8px; border:1px solid #38304e;
-  background:#100e1c; border-radius:18px; display:flex; gap:8px; align-items:center; }
-.composer input { min-width:0; flex:1; padding:10px 7px; border:0; outline:0;
-  color:white; background:transparent; font-size:13px; }
-.btn { border:0; border-radius:12px; padding:11px 13px; font-size:12px; font-weight:750; }
-.send { background:linear-gradient(135deg,#c4a9ff,#8b72f8); color:#170d2b; }
-.tools { display:grid; grid-template-columns:1fr 1fr 1fr; gap:9px; margin-top:11px; }
-.tool { color:#e4dcff; background:#171326; border:1px solid #332847;
-  border-radius:13px; padding:12px 4px; font-size:12px; }
-.tool:active,.btn:active { transform:scale(.97); }
-.tool .ico { display:block; font-size:19px; margin-bottom:5px; }
-.cards { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:25px; }
-.card { border:1px solid var(--line); background:linear-gradient(140deg,#171329,#100e1b);
-  border-radius:16px; padding:14px; text-align:left; color:var(--text); }
-.card b { font-size:12px; display:block; margin:8px 0 4px; }
-.card small { font-size:11px; line-height:1.5; color:var(--muted); }
-.card .icon { font-size:20px; }
-.note { margin-top:20px; border:1px solid #30263e; background:#100e1a;
-  border-radius:13px; padding:12px; font-size:11px; line-height:1.6; color:var(--muted); }
-footer { text-align:center; padding:25px 0 5px; color:#716986; font-size:10px; letter-spacing:1px; }
-@media(max-width:380px) {
-  .app { padding:18px 13px; }
-  .brand { font-size:21px; letter-spacing:4px; }
-  .orb-wrap { transform:scale(.9); margin:-8px 0; }
-}
+:root{color-scheme:dark;--bg:#090817;--panel:#151329;--line:#30294b;--purple:#b69aff;--cyan:#76f0f4;--text:#f7f3ff;--muted:#aaa2c6}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 50% 0%,#2c1852,var(--bg) 55%);color:var(--text);font-family:system-ui,sans-serif;min-height:100vh}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:680px;margin:auto;padding:20px 16px 30px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{font-size:25px;font-weight:900;letter-spacing:5px;background:linear-gradient(90deg,#fff,#b69aff,#76f0f4);background-clip:text;color:transparent}
+.sub{font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:4px}
+.badge{font-size:11px;border:1px solid #345a4c;color:#9cf2c6;background:#10251d;padding:7px 10px;border-radius:30px}
+.hero{text-align:center;padding:24px 0 22px}
+.orb{width:138px;height:138px;border-radius:50%;margin:18px auto 25px;background:radial-gradient(circle at 32% 25%,white,#d6c9ff 6%,#a48aff 18%,#7043db 40%,#29205e 68%,#100b20 82%);box-shadow:0 0 35px #9770ff99,0 0 90px #744cff44,inset -10px -14px 25px #090817;animation:pulse 4s infinite}
+@keyframes pulse{50%{transform:scale(1.06);filter:brightness(1.2)}}
+body.listening .orb{background:radial-gradient(circle at 32% 25%,white,#a3fff0 12%,#32bed0 38%,#25459b 72%);box-shadow:0 0 55px #48f1ed}
+h1{font-size:25px;margin:0 0 7px}
+.desc{font-size:13px;color:var(--muted);line-height:1.6}
+.status{display:inline-block;margin-top:15px;border:1px solid var(--line);border-radius:30px;padding:9px 13px;font-size:12px;color:#d6c6ff;background:#ffffff08}
+.bar{display:flex;justify-content:space-between;font-size:12px;color:#e3d8ff;margin:12px 0}
+.bar small{color:var(--muted)}
+.chat{display:flex;flex-direction:column;gap:11px;min-height:90px;max-height:45vh;overflow:auto;padding:2px}
+.msg{max-width:90%;background:var(--panel);border:1px solid var(--line);padding:12px 14px;border-radius:4px 16px 16px 16px;font-size:14px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.user{align-self:flex-end;background:#30214f;border-color:#624b91;border-radius:16px 4px 16px 16px}
+.who{display:block;font-size:10px;letter-spacing:1px;color:var(--purple);margin-bottom:4px}
+.composer{display:flex;gap:8px;margin-top:13px;padding:7px;background:#100e1d;border:1px solid var(--line);border-radius:16px}
+input{min-width:0;flex:1;background:transparent;color:white;border:0;outline:0;padding:10px;font-size:14px}
+.btn{border:1px solid var(--line);border-radius:12px;padding:11px 13px;background:#211a36;color:white;font-size:12px;font-weight:700}
+.primary{background:linear-gradient(130deg,#d2baff,#8e71fa);color:#170d2b;border:0}
+.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.controls button{min-height:58px}
+.shortcuts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:22px}
+.shortcut{background:#151228;border:1px solid var(--line);border-radius:13px;padding:13px;text-align:left;color:white;font-size:12px}
+.shortcut b{display:block;margin-bottom:5px}
+.shortcut span{color:var(--muted);font-size:11px}
+.settings{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;background:#121020;border:1px solid var(--line);padding:12px;border-radius:13px;font-size:12px}
+select{background:#201936;color:white;border:1px solid var(--line);border-radius:9px;padding:8px;max-width:145px}
+.note{margin-top:14px;border:1px solid var(--line);padding:12px;border-radius:12px;color:var(--muted);font-size:11px;line-height:1.65}
+footer{text-align:center;color:#77708f;font-size:10px;letter-spacing:1px;margin-top:24px}
+@media(max-width:360px){.logo{font-size:21px;letter-spacing:3px}.app{padding:16px 11px}.btn{padding:10px 8px}}
 </style>
 </head>
 <body>
 <div class="app">
-  <header>
-    <div>
-      <div class="brand">TRIVIXA</div>
-      <div class="tagline">A NEW KIND OF INTELLIGENCE</div>
-    </div>
-    <div class="pill">SYSTEM ONLINE</div>
-  </header>
+<header>
+  <div><div class="logo">TRIVIXA</div><div class="sub">YOUR PERSONAL AI PROJECT</div></div>
+  <div class="badge">● READY</div>
+</header>
 
-  <section class="hero">
-    <div class="orb-wrap">
-      <div class="ring"></div>
-      <div class="ring two"></div>
-      <div class="orb"></div>
-    </div>
-    <h1>Your world. Your intelligence.</h1>
-    <div class="subtitle">A personal AI project, built one breakthrough at a time.</div>
-    <div class="status" id="status">✦ Trivixa interface ready</div>
-  </section>
+<section class="hero">
+  <div class="orb"></div>
+  <h1>Your world. Your intelligence.</h1>
+  <div class="desc">Ek nayi soch. Ek nayi shuruaat.<br>Your assistant, built your way.</div>
+  <div class="status" id="status">✦ Trivixa is ready</div>
+</section>
 
-  <div class="section-title">YOUR CONVERSATION <span id="count">0 messages</span></div>
-  <section class="chat" id="chat" aria-live="polite">
-    <div class="msg"><span class="who">TRIVIXA</span>Hello! I'm Trivixa. ✨
-I'm your own AI project, and this is my first interactive interface.
-Try typing “help” to explore what this prototype can do.</div>
-  </section>
+<div class="bar"><span>CONVERSATION</span><small id="count">1 message</small></div>
+<div class="chat" id="chat" aria-live="polite">
+  <div class="msg"><span class="who">TRIVIXA</span>Namaste! 💜 Main Trivixa hoon. Tum Hindi, Hinglish ya English mein baat kar sakte ho. Neeche message likho ya microphone button try karo.</div>
+</div>
 
-  <form class="composer" id="form">
-    <input id="input" placeholder="Message Trivixa..." autocomplete="off" aria-label="Your message">
-    <button class="btn send" type="submit">Send ➤</button>
-  </form>
+<form class="composer" id="form">
+  <input id="input" placeholder="Trivixa se baat karo..." autocomplete="off" aria-label="Message">
+  <button class="btn primary" type="submit">Send ➤</button>
+</form>
 
-  <div class="tools">
-    <button class="tool" id="listen"><span class="ico">🎙️</span>Voice input</button>
-    <button class="tool" id="speak"><span class="ico">🔊</span>Speak reply</button>
-    <button class="tool" id="reset"><span class="ico">↻</span>New chat</button>
-  </div>
+<div class="controls">
+  <button class="btn" id="listen">🎙️ Listen</button>
+  <button class="btn" id="speak">🔊 Speak</button>
+  <button class="btn" id="clear">↻ New chat</button>
+</div>
 
-  <div class="section-title" style="margin-top:27px">EXPLORE TRIVIXA <span>PROTOTYPE 002</span></div>
-  <div class="cards">
-    <button class="card" data-prompt="Who are you?"><span class="icon">✧</span><b>Meet Trivixa</b><small>Discover the identity of your assistant.</small></button>
-    <button class="card" data-prompt="Help me plan my day"><span class="icon">◷</span><b>Daily planning</b><small>Explore planning and productivity ideas.</small></button>
-    <button class="card" data-prompt="Give me an interesting fact"><span class="icon">⌘</span><b>Explore ideas</b><small>Ask a question and start discovering.</small></button>
-    <button class="card" data-prompt="What should we build next?"><span class="icon">⬡</span><b>Build the future</b><small>Choose the next capability to develop.</small></button>
-  </div>
+<div class="bar" style="margin-top:25px"><span>QUICK ACTIONS</span><small>Tap to explore</small></div>
+<div class="shortcuts">
+  <button class="shortcut" data-q="Tum kaun ho?"><b>✧ Meet Trivixa</b><span>Assistant ka introduction</span></button>
+  <button class="shortcut" data-q="Mujhe ek joke sunao"><b>☺ Entertainment</b><span>Ek funny joke sunao</span></button>
+  <button class="shortcut" data-q="Aaj mujhe kya karna chahiye?"><b>◷ Daily planning</b><span>Apne din ko organize karo</span></button>
+  <button class="shortcut" data-q="Hum Trivixa ko aur behtar kaise banayein?"><b>⬡ Build the future</b><span>Agla upgrade plan karo</span></button>
+</div>
 
-  <div class="note">
-    <b style="color:#c9b8ff">Development status</b><br>
-    This is a working interface prototype with browser-based voice features. Its built-in responses are demonstrations, not a connected AI model yet. Your messages are not sent to an AI service by this demo.
-  </div>
-  <footer>TRIVIXA · BUILT FROM ZERO · VERSION 0.2</footer>
+<div class="settings">
+  <label for="lang">Voice language</label>
+  <select id="lang">
+    <option value="hi-IN">Hindi / Hinglish</option>
+    <option value="en-IN">Indian English</option>
+    <option value="en-US">US English</option>
+  </select>
+</div>
+
+<div class="note">
+  <b style="color:#d6c6ff">Current version: 1.0 prototype</b><br>
+  Chat, basic Hindi/Hinglish responses, browser speech input and speech output are included. Real AI model, live internet answers, always-listening wake word and smart-home control are not connected yet. This version requires no API key and sends no chat messages to an AI provider.
+</div>
+<footer>TRIVIXA · BUILT FROM ZERO · 1.0</footer>
 </div>
 
 <script>
+"use strict";
 const $ = id => document.getElementById(id);
 const chat = $("chat");
 const input = $("input");
 const status = $("status");
-let lastReply = "Hello! I'm Trivixa. Let's build something extraordinary.";
-let messages = 0;
+let lastReply = "Namaste! Main Trivixa hoon. Tumhari kya madad karun?";
+let count = 1;
 let recognition = null;
 
-function setStatus(text) { status.textContent = text; }
-
-function addMessage(text, who) {
-  const box = document.createElement("div");
-  box.className = "msg" + (who === "user" ? " user" : "");
-  const label = document.createElement("span");
-  label.className = "who";
-  label.textContent = who === "user" ? "YOU" : "TRIVIXA";
-  box.appendChild(label);
-  box.appendChild(document.createTextNode(text));
-  chat.appendChild(box);
-  messages++;
-  $("count").textContent = messages + (messages === 1 ? " message" : " messages");
-  box.scrollIntoView({behavior:"smooth", block:"nearest"});
+function addMessage(text,who){
+  const div=document.createElement("div");
+  div.className="msg"+(who==="user"?" user":"");
+  const label=document.createElement("span");
+  label.className="who";
+  label.textContent=who==="user"?"YOU":"TRIVIXA";
+  div.appendChild(label);
+  div.appendChild(document.createTextNode(text));
+  chat.appendChild(div);
+  count++;
+  $("count").textContent=count+" messages";
+  chat.scrollTop=chat.scrollHeight;
 }
 
-function demoReply(text) {
-  const q = text.toLowerCase();
-  if (q.includes("who are you") || q.includes("your name"))
-    return "I'm Trivixa — an original AI assistant project we're building from the ground up. My goal is to grow into a useful, conversational assistant with voice and practical tools.";
-  if (q.includes("help"))
-    return "Welcome to Trivixa! You can type messages, try voice input if your browser supports it, and use Speak reply to hear my demonstration response. Next, we can connect a real AI brain.";
-  if (q.includes("day") || q.includes("plan"))
-    return "Let's start simply: choose your three most important tasks, handle the most important one first, and leave time for breaks. Once my AI brain is connected, I can help make a more personalized plan.";
-  if (q.includes("fact"))
-    return "Here's one: octopuses have three hearts, and two of them pump blood toward the gills. I'd love to explore more questions with you when my AI connection is ready.";
-  if (q.includes("build") || q.includes("next"))
-    return "Our next major milestone is connecting Trivixa to a real language model. After that, we can improve conversations, voice, and useful tools. We will look for a genuinely free option first.";
-  if (q.includes("hello") || q.includes("hi"))
-    return "Hello! ✨ I'm glad you're here. What would you like to create or explore today?";
-  return "I received your message: \"" + text + "\"\n\nMy interface is working, but my real AI brain has not been connected yet. That will be our next development milestone.";
+function replyTo(message){
+  const q=message.toLowerCase().trim();
+
+  if(/^(hi|hello|hey|hii|namaste|namaskar)\b/.test(q)||q.includes("kaise ho"))
+    return "Namaste! 💜 Main Trivixa hoon. Main ready hoon—batao, aaj kya karna hai?";
+  if(q.includes("tum kaun")||q.includes("who are you")||q.includes("your name"))
+    return "Mera naam Trivixa hai. Main ek original personal AI assistant project hoon, jise hum step by step build kar rahe hain.";
+  if(q.includes("joke")||q.includes("chutkula"))
+    return "Ek robot ne kaha: Main bahut emotional hoon. Doosre ne poochha: Kyun? Robot bola: Mera hard drive bhar aaya hai! 😄";
+  if(q.includes("help")||q.includes("madad"))
+    return "Main abhi basic prototype hoon. Tum message type kar sakte ho, supported browser mein voice input try kar sakte ho aur Speak se reply sun sakte ho. Real AI connection abhi baaki hai.";
+  if(q.includes("time")||q.includes("kitne baje")||q.includes("samay"))
+    return "Phone ki live clock check karna sabse sahi rahega. Main abhi live clock service se connected nahi hoon.";
+  if(q.includes("weather")||q.includes("mausam"))
+    return "Main abhi live weather se connected nahi hoon, isliye sahi forecast dene ke liye weather service connect karni hogi.";
+  if(q.includes("thank")||q.includes("shukriya")||q.includes("dhanyavaad"))
+    return "Arey, koi baat nahi! 💜 Main yahin hoon jab bhi tum Trivixa par kaam karna chaho.";
+  if(q.includes("bye")||q.includes("alvida"))
+    return "Milte hain phir! Trivixa ka safar jaari rahega. ✨";
+  if(q.includes("build")||q.includes("behtar")||q.includes("next upgrade"))
+    return "Agla bada step real AI model connect karna hai. Uske baad natural conversations, better voice aur useful tools add karenge. Hum pehle free options evaluate karenge.";
+  if(q.includes("plan")||q.includes("karna chahiye"))
+    return "Ek simple plan: aaj ke 3 important tasks likho, sabse zaroori task pehle karo, aur beech mein breaks rakho. Main abhi tumhari personal details ya calendar se connected nahi hoon.";
+  return "Tumne kaha: “"+message+"”\n\nMain tumhara message receive kar sakti hoon, lekin abhi real AI model connected nahi hai. Isliye main har naye sawaal ka intelligent jawab abhi generate nahi kar sakti. Agla milestone mera AI brain connect karna hai.";
 }
 
-function sendMessage(text) {
-  text = text.trim();
-  if (!text) return;
-  addMessage(text, "user");
-  lastReply = demoReply(text);
-  addMessage(lastReply, "assistant");
-  setStatus("✦ Message received · Demo mode");
+function sendMessage(text){
+  text=text.trim();
+  if(!text)return;
+  addMessage(text,"user");
+  lastReply=replyTo(text);
+  addMessage(lastReply,"assistant");
+  status.textContent="✦ Message received · Prototype mode";
 }
 
-$("form").addEventListener("submit", e => {
+$("form").addEventListener("submit",e=>{
   e.preventDefault();
-  const text = input.value;
-  input.value = "";
+  const text=input.value;
+  input.value="";
   sendMessage(text);
 });
 
-document.querySelectorAll("[data-prompt]").forEach(button => {
-  button.addEventListener("click", () => sendMessage(button.dataset.prompt));
+document.querySelectorAll("[data-q]").forEach(button=>{
+  button.addEventListener("click",()=>sendMessage(button.dataset.q));
 });
 
-$("listen").addEventListener("click", () => {
-  const API = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!API) {
-    setStatus("Voice input unsupported here. Try Chrome on HTTPS.");
+$("listen").addEventListener("click",()=>{
+  const API=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!API){
+    status.textContent="Voice input unavailable here. Try Chrome on your HTTPS website.";
     return;
   }
-  if (recognition) {
-    try { recognition.abort(); } catch (_) {}
-  }
-  try {
-    recognition = new API();
-    recognition.lang = "en-IN";
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    document.body.classList.add("listening");
-    setStatus("🎙 Listening... speak now");
-    recognition.onresult = event => {
-      input.value = event.results[0][0].transcript;
-      setStatus("Speech captured · Tap Send");
+  try{
+    if(recognition){try{recognition.abort()}catch(e){}}
+    recognition=new API();
+    recognition.lang=$("lang").value;
+    recognition.continuous=false;
+    recognition.interimResults=false;
+    recognition.onstart=()=>{
+      document.body.classList.add("listening");
+      status.textContent="🎙️ Listening... ab bolo";
+    };
+    recognition.onresult=e=>{
+      input.value=e.results[0][0].transcript;
+      status.textContent="Speech captured. Send dabao.";
       input.focus();
     };
-    recognition.onerror = event => {
-      setStatus("Microphone: " + event.error + " · Check site permissions");
+    recognition.onerror=e=>{
+      status.textContent="Voice error: "+e.error+". Permission ya browser check karo.";
     };
-    recognition.onend = () => {
+    recognition.onend=()=>{
       document.body.classList.remove("listening");
-      if (status.textContent.includes("Listening"))
-        setStatus("Ready when you are");
+      if(status.textContent.includes("Listening"))
+        status.textContent="✦ Ready";
     };
     recognition.start();
-  } catch (error) {
+  }catch(e){
     document.body.classList.remove("listening");
-    setStatus("Could not start voice input. Reload and try again.");
+    status.textContent="Voice start nahi hua. Page reload karke try karo.";
   }
 });
 
-$("speak").addEventListener("click", () => {
-  if (!("speechSynthesis" in window)) {
-    setStatus("Speech playback isn't supported in this browser.");
+$("speak").addEventListener("click",()=>{
+  if(!("speechSynthesis" in window)){
+    status.textContent="Is browser mein speech playback supported nahi hai.";
     return;
   }
   speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(lastReply);
-  utterance.lang = "en-IN";
-  utterance.rate = 1;
-  utterance.pitch = 1.05;
-  utterance.onstart = () => {
-    document.body.classList.add("speaking");
-    setStatus("🔊 Trivixa is speaking");
-  };
-  utterance.onend = () => {
-    document.body.classList.remove("speaking");
-    setStatus("✦ Ready for your next idea");
-  };
-  utterance.onerror = () => {
-    document.body.classList.remove("speaking");
-    setStatus("Speech playback failed. Try again.");
-  };
+  const utterance=new SpeechSynthesisUtterance(lastReply);
+  utterance.lang=$("lang").value;
+  utterance.rate=1;
+  utterance.pitch=1.04;
+  utterance.onstart=()=>status.textContent="🔊 Trivixa bol rahi hai...";
+  utterance.onend=()=>status.textContent="✦ Trivixa ready";
+  utterance.onerror=()=>status.textContent="Speech playback error. Dobara try karo.";
   speechSynthesis.speak(utterance);
 });
 
-$("reset").addEventListener("click", () => {
-  speechSynthesis?.cancel();
+$("clear").addEventListener("click",()=>{
+  if("speechSynthesis" in window)speechSynthesis.cancel();
   chat.replaceChildren();
-  messages = 0;
-  $("count").textContent = "0 messages";
-  lastReply = "A fresh beginning. What shall we explore?";
-  addMessage("Fresh start. ✨ What shall we build together?", "assistant");
-  setStatus("✦ New conversation");
+  count=0;
+  lastReply="Namaste! Main Trivixa hoon. Kya karna hai?";
+  addMessage("Nayi shuruaat! ✨ Batao, kya explore karein?","assistant");
+  status.textContent="✦ New conversation";
+});
+
+$("lang").addEventListener("change",()=>{
+  status.textContent="Voice language updated";
 });
 </script>
 </body>
-</html>
+  </html>
+  
