@@ -1,0 +1,2 @@
+# Trivixa
+My sweet Ai
